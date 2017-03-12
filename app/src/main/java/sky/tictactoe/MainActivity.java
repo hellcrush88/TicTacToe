@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     GridLayout gridLayout;
 
     boolean gameIsActive = true;
+    boolean gameIsOver = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         // reset the image resource of each imageview
         for (int i = 0; i < gridLayout.getChildCount(); i++){
             ((ImageView)gridLayout.getChildAt(i)).setImageResource(0);
+            ((ImageView)gridLayout.getChildAt(i)).setClickable(true);
         }
     }
 
@@ -78,15 +80,13 @@ public class MainActivity extends AppCompatActivity {
             if (activePlayer == 0) {
                 img.setImageResource(R.drawable.red);
                 img.animate().translationYBy(1000f).rotationYBy(360).setDuration(500);
+                img.setClickable(false);
                 activePlayer = 1;
-                // disable image clicking
-                //img.setEnabled(false);
             } else {
                 img.setImageResource(R.drawable.yellow);
                 img.animate().translationYBy(1000f).rotationXBy(360).setDuration(500);
+                img.setClickable(false);
                 activePlayer = 0;
-                // disable image clicking
-                //img.setEnabled(false);
             }
             /**Firstly, for (int[] winningPosition : winningPos) .
              * The syntax for (a : B)  means for each item in the collection B,
@@ -117,12 +117,19 @@ public class MainActivity extends AppCompatActivity {
                     if(gameState[winningPosition[0]] == 0){
                         winner = "Red";
                     }
-                    TextView winnerMessage = (TextView)findViewById(R.id.winnerText);
-                    winnerMessage.setText(winner + " has won!");
-                    layout.setVisibility(View.VISIBLE);
+                        TextView winnerMessage = (TextView) findViewById(R.id.winnerText);
+                        winnerMessage.setText(winner + " has won!");
+                        layout.setVisibility(View.VISIBLE);
+
+
+                    for (int i = 0; i < gridLayout.getChildCount(); i++) {
+                        ((ImageView) gridLayout.getChildAt(i)).setClickable(false);
+                    }
+
                 }else{
                     //Checking whether game is played until the end
-                    boolean gameIsOver = true;
+                    gameIsOver = true;
+
                     // checking gameState whether all of the arrays are set to be played
                     // looping into each array in gameState
                     for(int counterState: gameState){
@@ -131,11 +138,14 @@ public class MainActivity extends AppCompatActivity {
                             gameIsOver = false;
                         }
                     }
-                    if(gameIsOver){
+                    // checking if game is really over and whether the game is still in active
+                    // to prevent stating for draw when a user win at the last round
+                    if(gameIsOver && gameIsActive){
                         TextView winnerMessage = (TextView)findViewById(R.id.winnerText);
                         winnerMessage.setText("It's a draw");
                         layout.setVisibility(View.VISIBLE);
                     }
+
                 }
             }
         }
